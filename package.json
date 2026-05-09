@@ -1,0 +1,31 @@
+{
+  "name": "thinc-id",
+  "version": "0.0.1",
+  "description": "Thinc ID provider for authentication with all of our future apps! ",
+  "keywords": [
+    "Thinc",
+    "id",
+    "auth",
+    "authorization",
+    "authentication",
+    "account",
+    "app",
+    "api",
+    "backend"
+  ],
+  "homepage": "https://github.com/ThincOrg/Thinc-ID#readme",
+  "bugs": {
+    "url": "https://github.com/ThincOrg/Thinc-ID/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThincOrg/Thinc-ID.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Shaedow2000",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
