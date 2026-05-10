@@ -1,5 +1,5 @@
 import type { Response, Request, NextFunction } from "express";
-import { ErrorRequestHandler } from "express";
+import type { ErrorRequestHandler } from "express";
 
 import { ServerError } from "../global/types.ts";
 import logger from "./logger.ts";
