@@ -6,6 +6,7 @@ import cors from "cors";
 
 import connect from "./config/db.ts";
 import errorHandler from "./middlewares/error.middleware.ts";
+import AuthRouter from "./routes/auth.routes.ts";
 
 const app: Express = express();
 
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+app.use("/auth", AuthRouter);
 app.use(errorHandler());
 
 async function start(): Promise<void> {
