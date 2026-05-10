@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import validator from "validator";
 
-const idSchema = new mongoose.Schema({
+const IdSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, "A username is required"],
@@ -26,6 +26,6 @@ const idSchema = new mongoose.Schema({
   verificationExpiry: { type: Date },
 });
 
-const idModel = mongoose.model("Id", idSchema);
+const IdModel = mongoose.model("Id", IdSchema);
 
-export default idModel;
+export default IdModel;
