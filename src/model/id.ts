@@ -8,6 +8,7 @@ const IdSchema = new mongoose.Schema(
       required: [true, "A username is required"],
       trim: true,
       unique: [true, "This username is already in use"],
+      minLength: [4, "A username should contain 4 or more characters"]
     },
     email: {
       type: String,
@@ -36,7 +37,7 @@ const IdSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestaps: true },
+  { timestamps: true }
 );
 
 const IdModel = mongoose.model("Id", IdSchema);

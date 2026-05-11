@@ -1,9 +1,11 @@
-import type { Response, Request, NextFunction } from "express";
+import type { Response, Request } from "express";
 import wrapper from "../middlewares/asyncWrapper.middleware.ts";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 import IdModel from "../model/id.ts";
 import Mailer from "../config/mail.ts";
+import type { propriety } from "../global/types.ts";
 
 const register = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
@@ -12,18 +14,21 @@ const register = wrapper(
       email,
       password,
     }: {
-      username: string;
-      email: string;
-      password: string;
+      username: propriety;
+      email: propriety;
+      password: propriety;
     } = req.body;
+
+    const salt: number = 10;
+    const hashedPassword: Promise<string> | void = await bcrypt.hash(password, salt);
 
     const code: number = crypto.randomInt(100000, 999999);
     const expiry: Date = new Date(Date.now() + 10 * 60 * 1000);
 
     const user = {
-      username: username.trim(),
-      email: email.toLowerCase(),
-      password: password,
+      username: username?.trim(),
+      email: email?.toLowerCase(),
+      password: hashedPassword,
       verificationCode: code,
       verificationExpiry: expiry,
     };
@@ -32,7 +37,8 @@ const register = wrapper(
 
     await newUser.save();
 
-    await Mailer.sendVerificationMail(email, code);
+    const mailer: Mailer = new Mailer();
+    await mailer.sendVerificationMail(email !== undefined ? email : "", code);
 
     return res.status(201).json({
       status: 201,
