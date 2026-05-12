@@ -6,8 +6,8 @@ import bcrypt from "bcryptjs";
 import IdModel from "../model/id.ts";
 import Mailer from "../config/mail.ts";
 import type { propriety } from "../global/types.ts";
-import AccountZodObject from "../global/zod.validation.object.js";
-import logger from "../middlewares/logger.js";
+import AccountZodObject from "../global/zod.validation.object.ts";
+import logger from "../middlewares/logger.ts";
 
 const register = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
