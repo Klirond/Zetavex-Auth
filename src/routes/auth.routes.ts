@@ -6,6 +6,7 @@ import {
   verifyAccount,
   resendVerificationCode,
   login,
+  logout,
 } from "../controller/auth.controller.ts";
 
 const AuthRouter: Router = express.Router();
@@ -15,5 +16,6 @@ AuthRouter.post("/verify", verifyAccount);
 AuthRouter.post("/resend", resendVerificationCode);
 
 AuthRouter.post("/login", login);
+AuthRouter.post("/logout", logout);
 
 export default AuthRouter;

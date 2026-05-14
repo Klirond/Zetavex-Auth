@@ -274,4 +274,27 @@ const login = wrapper(
   },
 );
 
+const logout = wrapper(
+  async (req: Request, res: Response): Promise<Response> => {
+    const refreshToken = req.cookies["Refresh-Token-Id"];
+
+    const uuidValidation = z.object({
+      token: z.uuidv4("Invalid refresh token"),
+    });
+
+    const result = uuidValidation.safeParse({ token: refreshToken });
+
+    if (!result.success) {
+      logger.error({ message: z.prettifyError(result.error) });
+
+      return res.status(400).json({
+        status: 400,
+        message: z.flattenError(result.error).fieldErrors,
+      });
+    }
+
+    return res.json({});
+  },
+);
+
 export { register, verifyAccount, resendVerificationCode, login, logout };
