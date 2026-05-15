@@ -382,6 +382,31 @@ const logoutAllRequest = wrapper(
         message: "Account not found. Invalid session id",
       });
     }
+    
+    for (let i: number = 0; i < account.refreshToken.length; i++) {
+      let current: {
+        token?: string | null | undefined;
+        expiry?: NativeDate | null | undefined;
+      } = account.refreshToken[i];
+
+      if (current.token === refreshToken) {
+        if (current.expiry && current.expiry < new Date(Date.now())) {
+          logger.warn({
+            message: "Session id already expired",
+            account: account.email,
+            id: refreshToken,
+          });
+
+          account.refreshToken.pull({ token: refreshToken });
+          await account.save();
+
+          return res.status(400).json({
+            status: 400,
+            message: "Session id already expired",
+          });
+        }
+      }
+    }
 
     const code: number = crypto.randomInt(100000, 999999);
     const expiry: Date = new Date(Date.now() + 10 * 60 * 1000);
