@@ -298,6 +298,18 @@ const logout = wrapper(
       { __v: false, password: false },
     );
 
+    if (!account) {
+      logger.error({
+        message: "Account not found. Invalid session id",
+        token: refreshToken,
+      });
+
+      return res.status(404).json({
+        status: 404,
+        message: "Account not found. Invalid session id",
+      });
+    }
+
     for (let i: number = 0; i < account.refreshToken.length; i++) {
       let current: { token: String; expiry: Date } = account.refreshToken;
 
