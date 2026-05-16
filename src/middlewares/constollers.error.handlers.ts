@@ -7,8 +7,8 @@ import type { safeParseResult } from "../global/types.ts";
 const validationErrorHandler = (
   res: Response,
   result: safeParseResult<unknown>,
-): Response | void => {
-  if (result.success) return;
+): Response => {
+  if (result.success) return res.status(200);
 
   logger.error(z.prettifyError(result.error!));
 

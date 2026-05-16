@@ -1,5 +1,4 @@
 import type { Response, Request } from "express";
-import { Types } from "mongoose";
 import wrapper from "../middlewares/asyncWrapper.middleware.ts";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
@@ -12,19 +11,13 @@ import AccountModel from "../model/account.ts";
 import Mailer from "../config/mail.ts";
 import AccountZodObject from "../global/zod.validation.object.ts";
 import logger from "../middlewares/logger.ts";
+import { validationErrorHandler } from "../middlewares/constollers.error.handlers.ts";
 
 const register = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
     const result = AccountZodObject.safeParse(req.body);
 
-    if (!result.success) {
-      logger.error(z.prettifyError(result.error));
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const {
       username,
@@ -72,14 +65,7 @@ const resendVerificationCode = wrapper(
     const emailVerificationObject = AccountZodObject.pick({ email: true });
     const result = emailVerificationObject.safeParse(req.body);
 
-    if (!result.success) {
-      logger.error(z.prettifyError(result.error));
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const { email }: { email: string } = result.data;
 
@@ -182,14 +168,7 @@ const login = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
     const result = AccountZodObject.safeParse(req.body);
 
-    if (!result.success) {
-      logger.error(z.prettifyError(result.error));
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const {
       email,
@@ -274,14 +253,7 @@ const logout = wrapper(
 
     const result = uuidValidation.safeParse({ token: refreshToken });
 
-    if (!result.success) {
-      logger.error({ message: z.prettifyError(result.error) });
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const account = await AccountModel.findOne(
       { "refreshToken.token": refreshToken },
@@ -345,14 +317,7 @@ const logoutAllRequest = wrapper(
       token: req.cookies["Refresh-Token-Id"],
     });
 
-    if (!result.success) {
-      logger.error({ message: z.prettifyError(result.error) });
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const refreshToken = result.data.token;
 
@@ -423,14 +388,7 @@ const logoutAll = wrapper(
 
     const result = codeValidation.safeParse(req.body);
 
-    if (!result.success) {
-      logger.error({ message: z.prettifyError(result.error) });
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const code: number = result.data.code;
 
@@ -494,14 +452,7 @@ const refresh = wrapper(
       token: req.cookies["Refresh-Token-Id"],
     });
 
-    if (!result.success) {
-      logger.error({ message: z.prettifyError(result.error) });
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const token: string = result.data.token;
 
@@ -588,14 +539,7 @@ const forgotPassword = wrapper(
 
     const result = zodEmailValidation.safeParse(req.body);
 
-    if (!result.success) {
-      logger.error({ message: z.prettifyError(result.error) });
-
-      return res.status(400).json({
-        status: 400,
-        message: z.flattenError(result.error).fieldErrors,
-      });
-    }
+    if (!result.success) return validationErrorHandler(res, result);
 
     const { email }: { email: string } = result.data;
 
