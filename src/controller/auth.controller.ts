@@ -605,7 +605,7 @@ const forgotPassword = wrapper(
     );
 
     if (!account) {
-      logger.error({ message: "Account not found", email: account.email });
+      logger.error({ message: "Account not found", email: email });
 
       return res.status(404).json({
         status: 404,
@@ -621,6 +621,7 @@ const forgotPassword = wrapper(
     await account.save();
 
     const mailer: Mailer = new Mailer();
+    mailer.sendResetPasswordMail(email, code);
 
     return res.status(200).json({
       status: 200,
@@ -638,4 +639,5 @@ export {
   logoutAllRequest,
   logoutAll,
   refresh,
+  forgotPassword,
 };

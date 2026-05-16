@@ -101,6 +101,33 @@ class Mailer implements MailerType {
       logger.error({ message: "An error occured", errorMessage: err });
     }
   }
+
+  public async sendResetPasswordMail(
+    email: string,
+    code: number,
+  ): Promise<void> {
+    try {
+      const mail = await this.transporter.sendMail({
+        from: this.mail,
+        to: email,
+        subject: "Password reset",
+        html: /* html */ `Reset code: ${code}`,
+      });
+
+      logger.info(`Email sent [ ${mail.messageId} ]`);
+    } catch (err: unknown) {
+      if (err instanceof ServerError) {
+        logger.error({ status: err.statusCode, message: err.message });
+        return;
+      }
+
+      if (err instanceof Error) {
+        logger.error(err.message);
+      }
+
+      logger.error({ message: "An error occured", errorMessage: err });
+    }
+  }
 }
 
 export default Mailer;
