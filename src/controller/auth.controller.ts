@@ -265,7 +265,8 @@ const login = wrapper(
 
 const logout = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
-    const refreshToken = req.cookies["Refresh-Token-Id"];
+    const refreshToken =
+      req.cookies !== null ? req.cookies["Refresh-Token-Id"] : null;
 
     const uuidValidation = z.object({
       token: z.uuidv4("Invalid refresh token"),
@@ -575,6 +576,55 @@ const refresh = wrapper(
       status: 200,
       message: "Refreshed access token",
       token: accessToken,
+    });
+  },
+);
+
+const forgotPassword = wrapper(
+  async (req: Request, res: Response): Promise<Response> => {
+    const zodEmailValidation = z.object({
+      email: z.email("Invalid email address"),
+    });
+
+    const result = zodEmailValidation.safeParse(req.body);
+
+    if (!result.success) {
+      logger.error({ message: z.prettifyError(result.error) });
+
+      return res.status(400).json({
+        status: 400,
+        message: z.flattenError(result.error).fieldErrors,
+      });
+    }
+
+    const { email }: { email: string } = result.data;
+
+    const account = await AccountModel.findOne(
+      { email },
+      { __v: false, password: false },
+    );
+
+    if (!account) {
+      logger.error({ message: "Account not found", email: account.email });
+
+      return res.status(404).json({
+        status: 404,
+        message: "Account not found",
+      });
+    }
+
+    const code: number = crypto.randomInt(100000, 999999);
+    const expiry: Date = new Date(Date.now() + 10 * 60 * 1000);
+
+    account.resetCode = code;
+    account.resetExpiry = expiry;
+    await account.save();
+
+    const mailer: Mailer = new Mailer();
+
+    return res.status(200).json({
+      status: 200,
+      message: "New password reset code has been sent",
     });
   },
 );
