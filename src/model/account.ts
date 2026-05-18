@@ -30,6 +30,7 @@ const AccountSchema = new mongoose.Schema(
     verificationExpiry: { type: Date },
     resetCode: { type: Number, default: null },
     resetExpiry: { type: Date, default: null },
+    resetToken: { type: String },
     refreshToken: [
       {
         token: { type: String },

@@ -510,6 +510,77 @@ const forgotPassword = wrapper(
   },
 );
 
+const resetPasswordToken = wrapper(
+  async (req: Request, res: Response): Promise<Response> => {
+    const codeValidation = z.object({
+      code: z.coerce
+        .number("Invalid reset code")
+        .min(6, "Reset code too short"),
+    });
+
+    const result = codeValidation.safeParse(req.body);
+
+    if (!result.success) return validationErrorHandler(res, result);
+
+    const code: number = result.data.code;
+
+    const account = await AccountModel.findOne(
+      { resetCode: code },
+      { __v: false },
+    );
+
+    if (!account) return accountNotFoundHandler(res, { code });
+
+    if (account.resetExpiry && account.resetExpiry < new Date(Date.now())) {
+      logger.warn({
+        message: "Reset code already expired",
+        account: account.email,
+        code: code,
+      });
+
+      account.resetCode = null;
+      account.resetExpiry = null;
+      await account.save();
+
+      return res.status(400).json({
+        status: 400,
+        message: "Reset code already expired",
+      });
+    }
+
+    if (account.resetCode !== code) {
+      logger.error({
+        message: "Invalid reset code",
+        account: account.email,
+        code: code,
+      });
+
+      return res.status(400).json({
+        status: 400,
+        message: "Invalid reset code",
+      });
+    }
+
+    logger.info({ message: "Reset permitted", account: account.email });
+
+    const resetCookie = uuidv4();
+
+    res.cookie("Password-Reset-UUID", resetCookie, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    account.resetToken = resetCookie;
+    await account.save();
+
+    return res.status(200).json({
+      status: 200,
+      message: "Reset permitted",
+    });
+  },
+);
+
 export {
   register,
   verifyAccount,
@@ -520,4 +591,5 @@ export {
   logoutAll,
   refresh,
   forgotPassword,
+  resetPasswordToken,
 };
