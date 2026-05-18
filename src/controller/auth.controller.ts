@@ -572,6 +572,8 @@ const resetPasswordToken = wrapper(
     });
 
     account.resetToken = resetCookie;
+    account.resetCode = null;
+    account.resetExpiry = new Date(Date.now() + 1 * 60 * 60 * 1000);
     await account.save();
 
     return res.status(200).json({
