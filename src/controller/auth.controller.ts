@@ -157,6 +157,9 @@ const verifyAccount = wrapper(
 
     logger.info({ message: "User verified", account: account.email });
 
+    const mailer: Mailer = new Mailer();
+    await mailer.sendWelcomeEmail(account.email, account.username);
+
     return res.status(200).json({
       status: 200,
       message: "Verification successful",

@@ -117,6 +117,24 @@ class Mailer implements MailerType {
       mailerError(err);
     }
   }
+
+  public async sendWelcomeEmail(
+    email: string,
+    username: string,
+  ): Promise<void> {
+    try {
+      const mail = await this.transporter.sendMail({
+        from: this.mail,
+        to: email,
+        subject: "Welcome!",
+        html: /* hmtl */ `Welcome ${username}`,
+      });
+
+      logger.info(`Email sent [ ${mail.messageId} ]`);
+    } catch (err: unknown) {
+      mailerError(err);
+    }
+  }
 }
 
 export default Mailer;
