@@ -13,8 +13,9 @@ import {
   forgotPassword,
   resetPasswordToken,
   resetPassword,
-  me,
   deleteAccountRequest,
+  deleteAccount,
+  me,
 } from "../controller/auth.controller.ts";
 
 const AuthRouter: Router = express.Router();
@@ -35,6 +36,7 @@ AuthRouter.post("/reset-password-token", resetPasswordToken);
 AuthRouter.post("/reset-password", resetPassword);
 
 AuthRouter.post("/delete-account-request", deleteAccountRequest);
+AuthRouter.delete("/delete-account", deleteAccount);
 
 AuthRouter.get("/me", me);
 
