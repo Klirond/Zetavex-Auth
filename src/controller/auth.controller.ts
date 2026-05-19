@@ -17,10 +17,15 @@ import {
   incorrectPassword,
   validationErrorHandler,
 } from "../middlewares/constollers.error.handlers.ts";
+import type { safeParseResult } from "../global/types.ts";
 
 const register = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
-    const result = AccountZodObject.safeParse(req.body);
+    const result: safeParseResult<{
+      username?: string;
+      email: string;
+      password: string;
+    }> = AccountZodObject.safeParse(req.body);
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -68,7 +73,8 @@ const register = wrapper(
 const resendVerificationCode = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
     const emailVerificationObject = AccountZodObject.pick({ email: true });
-    const result = emailVerificationObject.safeParse(req.body);
+    const result: safeParseResult<{ email: string }> =
+      emailVerificationObject.safeParse(req.body);
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -116,7 +122,9 @@ const verifyAccount = wrapper(
         .min(6, "Verification code too short"),
     });
 
-    const result = codeValidation.safeParse(req.body);
+    const result: safeParseResult<{ code: number }> = codeValidation.safeParse(
+      req.body,
+    );
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -158,7 +166,8 @@ const verifyAccount = wrapper(
 
 const login = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
-    const result = AccountZodObject.safeParse(req.body);
+    const result: safeParseResult<{ email: string; password: string }> =
+      AccountZodObject.safeParse(req.body);
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -220,7 +229,9 @@ const logout = wrapper(
       token: z.uuidv4("Invalid refresh token"),
     });
 
-    const result = uuidValidation.safeParse({ token: refreshToken });
+    const result: safeParseResult<{ token: string }> = uuidValidation.safeParse(
+      { token: refreshToken },
+    );
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -274,9 +285,10 @@ const logoutAllRequest = wrapper(
       token: z.uuidv4("Invalid refresh token"),
     });
 
-    const result = refreshTokenValidation.safeParse({
-      token: req.cookies["Refresh-Token-Id"],
-    });
+    const result: safeParseResult<{ token: string }> =
+      refreshTokenValidation.safeParse({
+        token: req.cookies["Refresh-Token-Id"],
+      });
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -339,7 +351,9 @@ const logoutAll = wrapper(
       code: z.coerce.number().min(6, "Verification code too short"),
     });
 
-    const result = codeValidation.safeParse(req.body);
+    const result: safeParseResult<{ code: number }> = codeValidation.safeParse(
+      req.body,
+    );
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -393,9 +407,10 @@ const refresh = wrapper(
       token: z.uuidv4("Invalid refresh token"),
     });
 
-    const result = cookieValidation.safeParse({
-      token: req.cookies["Refresh-Token-Id"],
-    });
+    const result: safeParseResult<{ token: string }> =
+      cookieValidation.safeParse({
+        token: req.cookies["Refresh-Token-Id"],
+      });
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -474,7 +489,8 @@ const forgotPassword = wrapper(
       email: z.email("Invalid email address"),
     });
 
-    const result = zodEmailValidation.safeParse(req.body);
+    const result: safeParseResult<{ email: string }> =
+      zodEmailValidation.safeParse(req.body);
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -514,7 +530,9 @@ const resetPasswordToken = wrapper(
         .min(6, "Reset code too short"),
     });
 
-    const result = codeValidation.safeParse(req.body);
+    const result: safeParseResult<{ code: number }> = codeValidation.safeParse(
+      req.body,
+    );
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -587,9 +605,10 @@ const resetPassword = wrapper(
       token: z.uuidv4("Invalid reset token"),
     });
 
-    const result = cookieValidation.safeParse({
-      token: req.cookies["Password-Reset-UUID"],
-    });
+    const result: safeParseResult<{ token: string }> =
+      cookieValidation.safeParse({
+        token: req.cookies["Password-Reset-UUID"],
+      });
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -621,7 +640,8 @@ const resetPassword = wrapper(
       password: z.string().min(6, "Password too short (6 or more characters)"),
     });
 
-    const bodyResult = bodyValidation.safeParse(req.body);
+    const bodyResult: safeParseResult<{ password: string }> =
+      bodyValidation.safeParse(req.body);
 
     if (!bodyResult.success) return validationErrorHandler(res, bodyResult);
 
@@ -655,7 +675,8 @@ const deleteAccountRequest = wrapper(
       password: true,
     });
 
-    const result = accountVerification.safeParse(req.body);
+    const result: safeParseResult<{ email: string; password: string }> =
+      accountVerification.safeParse(req.body);
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -700,7 +721,9 @@ const deleteAccount = wrapper(
         .min(6, "Verification code too short"),
     });
 
-    const result = codeValidation.safeParse(req.body);
+    const result: safeParseResult<{ code: number }> = codeValidation.safeParse(
+      req.body,
+    );
 
     if (!result.success) return validationErrorHandler(res, result);
 
@@ -749,7 +772,7 @@ const me = wrapper(async (req: Request, res: Response): Promise<Response> => {
     token: z.jwt("Invalid access token"),
   });
 
-  const result = tokenValidation.safeParse({
+  const result: safeParseResult<{ token: string }> = tokenValidation.safeParse({
     token: req.headers.authorization?.split(" ")[1],
   });
 
