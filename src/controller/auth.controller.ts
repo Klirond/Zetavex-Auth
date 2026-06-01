@@ -21,6 +21,8 @@ import type { safeParseResult } from "../global/types.ts";
 
 const mailer: Mailer = new Mailer();
 
+const ENV: string = process.env.NODE_ENV || "";
+
 const register = wrapper(
   async (req: Request, res: Response): Promise<Response> => {
     const result: safeParseResult<{
@@ -210,8 +212,8 @@ const login = wrapper(
 
     res.cookie("Refresh-Token-Id", refreshTokenObj.token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: ENV === "prod",
+      sameSite: ENV === "prod" ? "none" : "lax",
     });
 
     return res.status(200).json({
@@ -472,8 +474,8 @@ const refresh = wrapper(
 
     res.cookie("Refresh-Token-Id", newRefreshTokenObj.token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: ENV === "prod",
+      sameSite: ENV === "prod" ? "none" : "lax",
     });
 
     return res.status(200).json({
@@ -588,8 +590,8 @@ const resetPasswordToken = wrapper(
 
     res.cookie("PasswordResetUUID", resetCookie, {
       httpOnly: true,
-      secure: false,
-      sameSite: "none",
+      secure: ENV === "prod",
+      sameSite: ENV === "prod" ? "none" : "lax",
       path: "/",
       maxAge: 10 * 60 * 1000,
     });

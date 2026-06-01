@@ -4,6 +4,8 @@ import type { Express } from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 import connect from "./config/db.ts";
 import errorHandler from "./middlewares/error.middleware.ts";
@@ -13,16 +15,20 @@ import { ServerError } from "./global/types.ts";
 
 const app: Express = express();
 
+app.use(helmet());
+app.use(mongoSanitize());
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 app.use("/auth", AuthRouter);
 app.use(errorHandler);
