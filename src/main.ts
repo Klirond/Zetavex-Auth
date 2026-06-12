@@ -17,11 +17,21 @@ const app: Express = express();
 
 const ENV = process.env.NODE_ENV;
 
-const devOrigins: string[] = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const devOrigins: string[] = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+];
 const prodOrigins: string[] = [];
 
 const allowedOrigins = ENV !== "prod" ? devOrigins : prodOrigins;
 
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(cookieParser());
 app.use(
   cors({
     origin: (origin: any, callback: any): void => {
@@ -49,11 +59,6 @@ app.use(
     standardHeaders: "draft-8",
   }),
 );
-app.use(helmet());
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 app.use("/auth", AuthRouter);
 app.use(errorHandler);
