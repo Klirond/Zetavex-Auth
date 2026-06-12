@@ -281,6 +281,11 @@ const logout = wrapper(
     account.refreshToken.pull({ token: refreshToken });
     await account.save();
 
+    res.cookie("SessionId", "", {
+      maxAge: 0,
+      httpOnly: true,
+    });
+
     return res.status(200).json({
       status: 200,
       message: "Session ended successfully",
