@@ -38,7 +38,6 @@ const accountNotFoundHandler = (
   if (options.token) {
     logger.error({
       message: "Invalid cerdentials.",
-      token: options.token,
     });
 
     return res.status(404).json({

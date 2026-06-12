@@ -1,4 +1,4 @@
-import type { Response, Request, NextFunction } from "express";
+import type { Response } from "express";
 import type { ErrorRequestHandler } from "express";
 
 import { ServerError } from "../global/types.ts";
